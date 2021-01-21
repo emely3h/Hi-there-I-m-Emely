@@ -82,28 +82,9 @@ function buttonInsertionSort() {
     insertionSortA()
 }
 async function insertionSortA() {
-    p = Promise.resolve();
     for (let i = 1; i < numberArray.length; i++) {
-        /*   p.then(p = new Promise(
-             function(resolve) {
-                  window.setTimeout(
-                      function() {
-                         insertionSortB(i);
-                         resolve();
-                         }, speed);  */
         await syncTimeout();
         await insertionSortB(i);
-        /*       }
-         ));
-         await p;  */
-
-        /* p = p.then(() => new Promise(resolve =>
-            setTimeout(function () {
-                insertionSortB(i)
-                resolve();
-            }, 5)
-        ));
-        await p; */
     }
     clearTopContainer()
     drawBarEnd()
@@ -242,42 +223,39 @@ function drawBarSS(currentMax, i, color) {
 
 //#region  MERGE SORT ///////////////////////////////////////////////////////
 function buttonMergeSort() {
-    numberArray = mergeSort()
-    clearTopContainer()
-    drawBars()
+    numberArray = mergeSort(numberArray);
+    clearTopContainer();
+    drawBars();
 }
-function mergeSort(unsortedArray) {
-    if (numberArray.length <= 1) {
-        return numberArray;
+
+async function mergeSort(array) {
+    const half = array.length / 2;
+    if (array.length < 2) {
+        return array;
     }
-    const middle = Math.floor(numberArray.length / 2);
-    const left = numberArray.slice(0, middle);
-    const right = numberArray.slice(middle);
-    return merge(
-        mergeSort(left), mergeSort(right)
-    );
+    const left = array.splice(0, half);
+    return merge(mergeSort(left), mergeSort(array));
 }
-async function merge(left, right) {
-    let resultArray = [], leftIndex = 0, rightIndex = 0;
-    while (leftIndex < left.length && rightIndex < right.length) {
-        if (left[leftIndex] < right[rightIndex]) {
-            resultArray.push(left[leftIndex]);
-            clearTopContainer();
-            drawBars();
-            await syncTimeout();
-            leftIndex++;
+function merge(left, right) {
+    let arr = [];
+    while (left.length && right.length) {
+        // left[0] und right[0] einfärben, kleineres grün, größeres Rot
+        if (left[0] < right[0]) {
+            arr.push(left.shift());
+            /*  console.log("arr: " + arr);
+             await syncTimeout(); */
         } else {
-            resultArray.push(right[rightIndex]);
-            clearTopContainer();
-            drawBars();
-            await syncTimeout();
-            rightIndex++;
+            arr.push(right.shift());
+            /*  console.log("arr: " + arr);
+             await syncTimeout(); */
+
         }
     }
-    return resultArray
-        .concat(left.slice(leftIndex))
-        .concat(right.slice(rightIndex));
+    // Concatenating the leftover elements
+    return [...arr, ...left, ...right];
 }
+
+
 //#endregion
 
 //#region  BUBBLE SORT ////////////////////////////////////////////////////////////////////
@@ -370,7 +348,38 @@ async function test() {
     console.log(ergebnis);
 } */
 
-
+/* function mergeSort(unsortedArray) {
+    if (numberArray.length <= 1) {
+        return numberArray;
+    }
+    const middle = Math.floor(numberArray.length / 2);
+    const left = numberArray.slice(0, middle);
+    const right = numberArray.slice(middle);
+    return merge(
+        mergeSort(left), mergeSort(right)
+    );
+}
+async function merge(left, right) {
+    let resultArray = [], leftIndex = 0, rightIndex = 0;
+    while (leftIndex < left.length && rightIndex < right.length) {
+        if (left[leftIndex] < right[rightIndex]) {
+            resultArray.push(left[leftIndex]);
+            clearTopContainer();
+            drawBars();
+            await syncTimeout();
+            leftIndex++;
+        } else {
+            resultArray.push(right[rightIndex]);
+            clearTopContainer();
+            drawBars();
+            await syncTimeout();
+            rightIndex++;
+        }
+    }
+    return resultArray
+        .concat(left.slice(leftIndex))
+        .concat(right.slice(rightIndex));
+} */
 
 
 
